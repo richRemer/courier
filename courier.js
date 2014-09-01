@@ -7,6 +7,7 @@ var prop = require("propertize");
 function Courier(scope) {
     prop.readonly(this, "scope", scope);
     prop.readonly(this, "subscribers", []);
+    prop.readonly(this, "undeliverables", []);
     prop.readonly(this, "channels", {});
 }
 
@@ -21,9 +22,14 @@ Courier.prototype.publish = function(ch, msg) {
     var scope = this.scope,
         subs = ch === null ? this.subscribers : (this.channels[ch] || []);
     
-    subs.forEach(function(subscriber) {
-        subscriber.call(scope, msg);
-    });
+    if (subs.length === 0)
+        this.undeliverables.forEach(function(subscriber) {
+            subscriber.call(scope, ch, msg);
+        });
+    else
+        subs.forEach(function(subscriber) {
+            subscriber.call(scope, msg);
+        });
 };
 
 /**
@@ -37,6 +43,14 @@ Courier.prototype.subscribe = function(ch, subscriber) {
     
     if (ch !== null) this.channels[ch] = this.channels[ch] || [];
     (ch === null ? this.subscribers : this.channels[ch]).push(subscriber);
+};
+
+/**
+ * Subscribe to otherwise undeliverable messages from this courier.
+ * @param {function} subscriber
+ */
+Courier.prototype.undeliverable = function(subscriber) {
+    this.undeliverables.push(subscriber);
 };
 
 /**
@@ -73,10 +87,20 @@ function subscribe(obj, ch, subscriber) {
     courier(obj).courier.subscribe(ch, subscriber);
 }
 
+/**
+ * Subscribe to otherwise undeliverable messages from the object's courier.
+ * @param {object} obj
+ * @param {function} subscriber
+ */
+function undeliverable(obj, subscriber) {
+    courier(obj).courier.undeliverable(subscriber);
+}
+
 /** module exports */
 module.exports = {
     Courier: Courier,
     courier: courier,
     publish: publish,
-    subscribe: subscribe
-}
+    subscribe: subscribe,
+    undeliverable: undeliverable
+};

@@ -61,6 +61,21 @@ describe("courier", function() {
                 expect(delivered).to.be(true);
             });
         });
+        
+        describe(".undeliverable", function() {
+            it("should subscribe to undelivered messages", function() {
+                var delivered = false,
+                    sub = function(channel, message) {
+                        delivered = true;
+                        expect(channel).to.be("missing_channel");
+                        expect(message).to.be(msg);
+                    };
+                
+                c.undeliverable(sub);
+                c.publish("missing_channel", msg);
+                expect(delivered).to.be(true);
+            });
+        });
     });
 
     describe(".courier", function() {
