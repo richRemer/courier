@@ -1,0 +1,22 @@
+{
+  "name": "courier",
+  "version": "0.0.1",
+  "description": "Variant of the publish/subscribe pattern.",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "devDependencies": {
+    "mocha": "~1",
+    "expect.js": "~0.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/richRemer/courier.git"
+  },
+  "author": "Richard Remer (reanjr@gmail.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/richRemer/courier/issues"
+  }
+}
