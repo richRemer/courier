@@ -67,13 +67,34 @@ describe("courier", function() {
                 var delivered = false,
                     sub = function(channel, message) {
                         delivered = true;
-                        expect(channel).to.be("missing_channel");
                         expect(message).to.be(msg);
                     };
                 
                 c.undeliverable(sub);
                 c.publish("missing_channel", msg);
                 expect(delivered).to.be(true);
+            });
+        });
+        
+        describe(".unsubscribe", function() {
+            it("should unsubscribe a provided recipient", function() {
+                var unsubscribed = true,
+                    sub = function() {unsubscribed = false;};
+                
+                c.subscribe(sub);
+                c.unsubscribe(sub);
+                c.publish(msg);
+                expect(unsubscribed).to.be(true);
+            });
+            
+            it("should unsubscribe all recipients if none provided", function() {
+                var unsubscribed = true,
+                    sub = function() {unsubscribed = false;};
+                
+                c.subscribe(sub);
+                c.unsubscribe();
+                c.publish(msg);
+                expect(unsubscribed).to.be(true);
             });
         });
     });

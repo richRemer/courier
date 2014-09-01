@@ -54,6 +54,45 @@ Courier.prototype.undeliverable = function(subscriber) {
 };
 
 /**
+ * Unsubscribe one or more subscribers from the courier.  If the channel is null
+ * or not specified, remove subscribers from the object.  If the channel is a
+ * string, remove subscribers from the specified channel.  If the channel is
+ * false, remove subscribers from the undeliverables.  If the channel is true,
+ * remove subscribers from the object, all channels, and the undeliverables.  If
+ * the subscriber is not provided, remove all subscribers, otherwise, just
+ * remove the provided subscriber.
+ * undeliverable list.
+ * @param {string|boolean} [ch]
+ * @param {function} [subscriber]
+ */
+Courier.prototype.unsubscribe = function(ch, subscriber) {
+    if (typeof ch === "function") subscriber = ch, ch = null;
+    
+    var $this = this,
+        subs = [],
+        i;
+    
+    if (ch === true) {
+        this.channels.forEach(function(v, ch) {
+            $this.unsubscribe(ch, subscriber)
+        });
+        this.unsubscribe(null, subscriber);
+        this.unsubscribe(false, subscriber);
+    }
+    
+    else if (ch === false) subs = this.undeliverables;
+    else if (ch === null || ch === undefined) subs = this.subscribers;
+    else subs = this.channels[ch] || [];
+    
+    if (subscriber) {
+        if ((i = subs.indexOf(subscriber)) >= 0)
+            subs.splice(i, 1);
+    } else {
+        subs.splice(0, subs.length);
+    }
+}
+
+/**
  * Add a courier to the provided object and return the modified object.
  * @param {object} obj
  * @returns {object}
