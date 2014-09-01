@@ -135,11 +135,23 @@ function undeliverable(obj, subscriber) {
     courier(obj).courier.undeliverable(subscriber);
 }
 
+/**
+ * Unsubscribe from an object courier.
+ * @param {object} obj
+ * @param {string} [ch]
+ * @param {function} [subscriber]
+ */
+function unsubscribe(obj, ch, subscriber) {
+    if (typeof ch === "function") subscriber = ch, ch = null;
+    courier(obj).courier.unsubscribe(ch, subscriber);
+}
+
 /** module exports */
 module.exports = {
     Courier: Courier,
     courier: courier,
     publish: publish,
     subscribe: subscribe,
-    undeliverable: undeliverable
+    undeliverable: undeliverable,
+    unsubscribe: unsubscribe
 };

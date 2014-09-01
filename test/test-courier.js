@@ -139,6 +139,7 @@ describe("courier", function() {
             };
             
             courier.publish(obj, msg);
+            expect(invoked).to.be(true);
         });
     });
     
@@ -161,6 +162,51 @@ describe("courier", function() {
             };
             
             courier.subscribe(obj, sub);
+            expect(invoked).to.be(true);
         });
     });
+    
+    describe(".undeliverable", function() {
+        it("should add a courier to an object if not present", function() {
+            var obj = {},
+                sub = function() {};
+            
+            courier.undeliverable(obj, sub);
+            expect(obj.courier).to.be.an("object");
+        });
+
+        it("should invoke an object courier's undeliverable method", function() {
+            var obj = {courier: {}},
+                sub = function() {},
+                invoked = false;
+            
+            obj.courier.undeliverable = function() {
+                invoked = true;
+            };
+            
+            courier.undeliverable(obj, sub);
+            expect(invoked).to.be(true);
+        });
+    })
+    
+    describe(".unsubscribe", function() {
+        it("should add a courier to an object if not present", function() {
+            var obj = {};
+            courier.unsubscribe(obj);
+            expect(obj.courier).to.be.an("object");
+        });
+
+        it("should invoke an object courier's unsubscribe method", function() {
+            var obj = {courier: {}},
+                sub = function() {},
+                invoked = false;
+            
+            obj.courier.unsubscribe = function() {
+                invoked = true;
+            };
+            
+            courier.unsubscribe(obj);
+            expect(invoked).to.be(true);
+        });
+    })
 });
