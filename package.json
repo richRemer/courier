@@ -2,9 +2,12 @@
   "name": "courier",
   "version": "0.0.1",
   "description": "Variant of the publish/subscribe pattern.",
-  "main": "index.js",
+  "main": "courier.js",
   "scripts": {
     "test": "mocha"
+  },
+  "dependencies": {
+    "propertize": "~1"
   },
   "devDependencies": {
     "mocha": "~1",
