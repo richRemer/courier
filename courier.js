@@ -20,7 +20,9 @@ Courier.prototype.publish = function(ch, msg) {
     if (arguments.length < 2) msg = ch, ch = null;
     
     var scope = this.scope,
-        subs = ch === null ? this.subscribers : (this.channels[ch] || []);
+        subs = ch === null || ch === undefined
+            ? this.subscribers
+            : (this.channels[ch] || []);
     
     if (subs.length === 0)
         this.undeliverables.forEach(function(subscriber) {
@@ -93,6 +95,24 @@ Courier.prototype.unsubscribe = function(ch, subscriber) {
 }
 
 /**
+ * Forward messages from one object courier to another.
+ * @param {string} [chsrc]
+ * @param {object} dest
+ * @param {string} [chdest]
+ */
+Courier.prototype.forward = function(chsrc, dest, chdest) {
+    if (arguments.length === 1) dest = chsrc, chsrc = null;
+    else if (arguments.length === 2) {
+        if (typeof chsrc !== "string")
+            chdest = dest, dest = chsrc, chsrc = null;
+    }
+
+    this.subscribe(chsrc, function(msg) {
+        publish(dest, chdest, msg);
+    });
+};
+
+/**
  * Add a courier to the provided object and return the modified object.
  * @param {object} obj
  * @returns {object}
@@ -146,6 +166,24 @@ function unsubscribe(obj, ch, subscriber) {
     courier(obj).courier.unsubscribe(ch, subscriber);
 }
 
+/**
+ * Forward messages from one object courier to another.
+ * @param {object} source
+ * @param {string} [chsrc]
+ * @param {object} dest
+ * @param {string} [chdest]
+ */
+function forward(source, chsrc, dest, chdest) {
+    var args = Array.prototype.slice.call(arguments);
+    if (args.length === 3) {
+        if (typeof dest === "string") chdest = dest, dest = chsrc, chsrc = null;
+    } else if (args.length === 2) {
+        dest = chsrc, chsrc = null;
+    }
+    
+    courier(source).courier.forward(chsrc, dest, chdest);
+}
+
 /** module exports */
 module.exports = {
     Courier: Courier,
@@ -153,5 +191,6 @@ module.exports = {
     publish: publish,
     subscribe: subscribe,
     undeliverable: undeliverable,
-    unsubscribe: unsubscribe
+    unsubscribe: unsubscribe,
+    forward: forward
 };

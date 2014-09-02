@@ -97,6 +97,41 @@ describe("courier", function() {
                 expect(unsubscribed).to.be(true);
             });
         });
+        
+        describe(".forward", function() {
+            it("should forward messages to another object", function() {
+                var forwarded = false,
+                    sub = function() {forwarded = true;},
+                    target = {};
+                
+                courier.subscribe(target, sub);
+                c.forward(target);
+                c.publish(msg);
+                expect(forwarded).to.be(true);
+            });
+            
+            it("should forward channel messages to another object", function() {
+                var forwarded = false,
+                    sub = function() {forwarded = true;},
+                    target = {};
+                
+                courier.subscribe(target, sub);
+                c.forward(ch, target);
+                c.publish(ch, msg);
+                expect(forwarded).to.be(true);
+            });
+            
+            it("should optionally forward messages to a channel", function() {
+                var forwarded = false,
+                    sub = function() {forwarded = true;},
+                    target = {};
+                
+                courier.subscribe(target, ch, sub);
+                c.forward(target, ch);
+                c.publish(msg);
+                expect(forwarded).to.be(true);
+            });
+        });
     });
 
     describe(".courier", function() {
@@ -206,6 +241,27 @@ describe("courier", function() {
             };
             
             courier.unsubscribe(obj);
+            expect(invoked).to.be(true);
+        });
+    })
+    
+    describe(".forward", function() {
+        it("should add a courier to an object if not present", function() {
+            var obj = {};
+            courier.forward(obj, {});
+            expect(obj.courier).to.be.an("object");
+        });
+
+        it("should invoke an object courier's forward method", function() {
+            var obj = {courier: {}},
+                sub = function() {},
+                invoked = false;
+            
+            obj.courier.forward = function() {
+                invoked = true;
+            };
+            
+            courier.forward(obj, {});
             expect(invoked).to.be(true);
         });
     })

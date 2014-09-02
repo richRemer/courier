@@ -21,11 +21,11 @@ subscribe(obj, "FOO", function(msg) {});
 // similarly, add an extra publish argument to publish to a channel
 publish(obj, "FOO", "Foo!");
 
-// channel published messages will not call any subscriber
+// when not subscribed published messages go nowhere
 publish(obj, "BAR", "Bar!");    // no subscribers called
 
 // unless you want them to fallback as an undeliverable message
-undeliverable(obj, function(msg) {});
+undeliverable(obj, function(ch, msg) {});
 ```
 
 Usage - Object Style
@@ -50,5 +50,5 @@ obj.courier.publish("Foo!");
 obj.courier.publish("FOO", "Foo!");
 
 // setup an undeliverable recipient
-obj.courier.undeliverable(function(msg) {});
+obj.courier.undeliverable(function(ch, msg) {});
 ```

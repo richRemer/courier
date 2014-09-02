@@ -1,6 +1,6 @@
 {
   "name": "courier",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Variant of the publish/subscribe pattern.",
   "main": "courier.js",
   "scripts": {
