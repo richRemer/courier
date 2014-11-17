@@ -6,7 +6,7 @@ Usage - Functional Style
 ```js
 var publish = require("courier").publish,
     subscribe = require("courier").subscribe,
-    undeliverable = requireq("courier").undeliverable,
+    undeliverable = require("courier").undeliverable,
     obj = {a:1};
 
 // add a subscriber function to an object
